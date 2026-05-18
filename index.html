@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#C1623A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Sessions" />
+  <title>Claude Sessions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#F5EFE6;--card:#FBF7F2;--form:#EDE5D8;--terra:#C1623A;
+      --dark:#9B4A28;--faint:#F0DDD4;--text:#3D2B1F;--mid:#7A5C48;
+      --light:#A8856E;--border:#DDD0C0;--strong:#C4A882;--ok:#6B8F5E;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    html,body{height:100%;background:var(--bg);}
+    body{font-family:'Jost',sans-serif;color:var(--text);padding-bottom:calc(80px + env(safe-area-inset-bottom));}
+    .header{background:var(--terra);padding:calc(44px + env(safe-area-inset-top)) 20px 24px;border-bottom:3px solid var(--dark);}
+    .header-inner{max-width:480px;margin:0 auto;}
+    .header-top{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+    .header-icon{width:44px;height:44px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+    .header h1{font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:700;color:#FBF7F2;letter-spacing:.2px;}
+    .header p{font-size:10px;color:rgba(251,247,242,.6);letter-spacing:.8px;text-transform:uppercase;margin-top:2px;}
+    .notif-btn{margin-top:14px;width:100%;padding:11px 16px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#FBF7F2;border-radius:10px;font-size:12px;font-family:'Jost',sans-serif;font-weight:500;letter-spacing:.5px;cursor:pointer;display:flex;align-items:center;gap:8px;justify-content:center;transition:background .15s;}
+    .notif-btn:active{background:rgba(255,255,255,.28);}
+    .notif-ok{margin-top:8px;font-size:11px;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:6px;}
+    .notif-dot{width:7px;height:7px;border-radius:50%;background:#A8D8A0;display:inline-block;}
+    .main{max-width:480px;margin:0 auto;padding:0 16px;}
+    .empty{text-align:center;padding:44px 24px 36px;background:var(--card);border:1.5px dashed var(--strong);border-radius:20px;margin-top:24px;}
+    .empty-icon{font-size:48px;margin-bottom:16px;filter:drop-shadow(0 2px 6px rgba(193,98,58,.2));}
+    .empty h2{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--dark);margin-bottom:8px;}
+    .empty p{font-size:13px;color:var(--light);line-height:1.7;margin-bottom:22px;}
+    .empty-btn{padding:11px 24px;background:var(--terra);color:#FBF7F2;border:none;border-radius:10px;font-size:13px;font-family:'Jost',sans-serif;font-weight:600;letter-spacing:.4px;cursor:pointer;}
+    .empty-btn:active{opacity:.85;}
+    #list{margin-top:24px;display:flex;flex-direction:column;gap:12px;}
+    .card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;position:relative;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease;animation:fadeUp .3s ease;}
+    .card.available{border-color:var(--ok);box-shadow:0 0 22px rgba(107,143,94,.22);}
+    .card-accent{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:16px 0 0 16px;}
+    .card-body{display:flex;align-items:center;gap:14px;padding:16px 14px 12px 18px;}
+    .ring-wrap{position:relative;flex-shrink:0;}
+    .ring-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+    .ring-pct{font-size:10px;font-weight:600;}
+    .ring-check{font-size:20px;}
+    .card-info{flex:1;min-width:0;}
+    .card-name-row{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap;}
+    .card-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;}
+    .card-email{font-size:10px;color:var(--light);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:170px;flex-shrink:1;}
+    .card-sub{font-size:10px;color:var(--light);margin-bottom:6px;}
+    .card-countdown{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--dark);letter-spacing:3px;line-height:1;}
+    .card-avail{font-size:13px;font-weight:600;color:var(--ok);animation:softPulse 2s ease-in-out infinite;}
+    .card-actions{display:flex;border-top:1px solid var(--border);}
+    .card-btn{flex:1;padding:11px 0;background:transparent;border:none;font-size:12px;font-family:'Jost',sans-serif;letter-spacing:.4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s;color:var(--mid);}
+    .card-btn:active{background:var(--faint);}
+    .card-btn.del{color:#B34040;border-left:1px solid var(--border);}
+    .add-btn{margin-top:20px;width:100%;padding:16px;background:transparent;border:2px dashed var(--strong);border-radius:16px;color:var(--mid);font-size:13px;font-family:'Jost',sans-serif;letter-spacing:.5px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:border-color .15s,background .15s;}
+    .add-btn:active{background:var(--faint);}
+    .add-plus{font-size:18px;color:var(--terra);}
+    .form-wrap{margin-top:20px;background:var(--form);border:1.5px solid var(--strong);border-radius:16px;padding:20px;animation:fadeUp .3s ease;}
+    .form-wrap h2{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;margin-bottom:18px;color:var(--dark);}
+    .form-fields{display:flex;flex-direction:column;gap:14px;}
+    .field label{font-size:10px;color:var(--light);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.8px;}
+    .field input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-size:13px;font-family:'Jost',sans-serif;outline:none;transition:border-color .15s;}
+    .field input:focus{border-color:var(--terra);}
+    .field input[type=time]::-webkit-calendar-picker-indicator{filter:invert(35%) sepia(30%) saturate(500%) hue-rotate(340deg);}
+    .field-hint{font-size:11px;color:var(--light);margin-top:6px;line-height:1.5;}
+    .form-btns{display:flex;gap:10px;margin-top:16px;}
+    .btn-cancel{flex:1;padding:12px;background:var(--card);color:var(--mid);border:1px solid var(--border);border-radius:10px;font-size:13px;font-family:'Jost',sans-serif;cursor:pointer;}
+    .btn-cancel:active{background:var(--faint);}
+    .btn-save{flex:2;padding:12px;background:var(--terra);color:#FBF7F2;border:none;border-radius:10px;font-size:13px;font-family:'Jost',sans-serif;font-weight:600;letter-spacing:.3px;cursor:pointer;}
+    .btn-save:active{opacity:.85;}
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--dark);border-radius:12px;padding:13px 22px;font-size:13px;color:#FBF7F2;z-index:100;box-shadow:0 8px 32px rgba(155,74,40,.35);white-space:nowrap;pointer-events:none;animation:fadeUp .3s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes softPulse{0%,100%{opacity:1}50%{opacity:.5}}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--strong);border-radius:2px}
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="header-icon">⏱</div>
+      <div>
+        <h1>Claude Sessions</h1>
+        <p>Gestionnaire de rappels</p>
+      </div>
+    </div>
+    <button class="notif-btn" id="notifBtn" onclick="requestNotif()">🔔 Activer les notifications</button>
+    <div class="notif-ok" id="notifOk" style="display:none">
+      <span class="notif-dot"></span> Notifications actives
+    </div>
+  </div>
+</div>
+<div class="main">
+  <div id="list"></div>
+  <button class="add-btn" id="addBtn" onclick="openForm()">
+    <span class="add-plus">+</span> Ajouter un compte
+  </button>
+  <div class="form-wrap" id="formWrap" style="display:none">
+    <h2 id="formTitle">Nouveau compte</h2>
+    <div class="form-fields">
+      <div class="field">
+        <label>Nom</label>
+        <input type="text" id="fName" placeholder="ex : Compte perso, Pro…" />
+      </div>
+      <div class="field">
+        <label>Adresse e-mail</label>
+        <input type="email" id="fEmail" placeholder="ex : perso@gmail.com" />
+      </div>
+      <div class="field">
+        <label>Heure de déblocage</label>
+        <input type="time" id="fTime" />
+        <div class="field-hint">L'heure à laquelle votre session Claude sera disponible.</div>
+      </div>
+    </div>
+    <div class="form-btns">
+      <button class="btn-cancel" onclick="closeForm()">Annuler</button>
+      <button class="btn-save" onclick="saveAccount()">Ajouter</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" style="display:none"></div>
+<script>
+  const COLORS=["#C1623A","#A0522D","#B8975A","#9B4A28","#A8856E","#7A5C48","#D4845D","#6B4C3B"];
+  let accounts=[],editId=null,toastTimeout=null;
+  const notified=new Set();
+
+  function load(){try{accounts=JSON.parse(localStorage.getItem('claude_tc_v1')||'[]');}catch{accounts=[];}}
+  function save(){try{localStorage.setItem('claude_tc_v1',JSON.stringify(accounts));}catch{}}
+
+  function updateNotifUI(){
+    const granted=typeof Notification!=='undefined'&&Notification.permission==='granted';
+    document.getElementById('notifBtn').style.display=granted?'none':'flex';
+    document.getElementById('notifOk').style.display=granted?'flex':'none';
+  }
+  async function requestNotif(){
+    if(typeof Notification==='undefined'){showToast('⚠️ Notifications non supportées');return;}
+    if(location.protocol==='file:'){showToast('⚠️ Mettez le fichier en ligne pour les notifications');return;}
+    if(Notification.permission==='denied'){showToast('🔕 Autorisez les notifications dans les réglages');return;}
+    const p=await Notification.requestPermission();
+    updateNotifUI();
+    if(p==='granted')showToast('🔔 Notifications activées !');
+    else showToast('🔕 Notifications refusées');
+  }
+  function sendNotif(acc){
+    if(typeof Notification==='undefined'||Notification.permission!=='granted')return;
+    new Notification(`✅ ${acc.name} est disponible !`,{body:acc.email?`Compte : ${acc.email}`:'Votre session Claude est prête.'});
+  }
+  function showToast(msg){
+    const el=document.getElementById('toast');
+    el.textContent=msg;el.style.display='block';
+    clearTimeout(toastTimeout);
+    toastTimeout=setTimeout(()=>{el.style.display='none';},4000);
+  }
+  function fmt(ts){return new Date(ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
+  function countdown(ms){
+    if(ms<=0)return'Disponible !';
+    const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000);
+    return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  function ring(progress,color,size=78,stroke=6){
+    const r=(size-stroke)/2,circ=2*Math.PI*r,offset=circ*(1-Math.max(0,Math.min(1,progress)));
+    return`<svg width="${size}" height="${size}" style="transform:rotate(-90deg)">
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#DDD0C0" stroke-width="${stroke}"/>
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
+        stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"
+        style="transition:stroke-dashoffset 1s linear"/>
+    </svg>`;
+  }
+
+  function render(){
+    const now=Date.now();
+    const sorted=[...accounts].sort((a,b)=>a.availableAt-b.availableAt);
+    const list=document.getElementById('list');
+    if(sorted.length===0){
+      document.getElementById('addBtn').style.display='none';
+      list.innerHTML=`<div class="empty">
+        <div class="empty-icon">🏺</div>
+        <h2>Aucun compte pour l'instant</h2>
+        <p>Ajoutez vos comptes Claude et ne manquez<br>plus jamais le moment où une session se libère.</p>
+        <button class="empty-btn" onclick="openForm()">+ Ajouter mon premier compte</button>
+      </div>`;
+      return;
+    }
+    document.getElementById('addBtn').style.display='flex';
+    sorted.forEach(acc=>{
+      const rem=acc.availableAt-now,total=acc.availableAt-acc.blockedAt;
+      const progress=rem>0?1-rem/total:1,available=rem<=0;
+      const color=COLORS[acc.colorIdx??0];
+      if(available&&!notified.has(acc.id)){notified.add(acc.id);sendNotif(acc);showToast(`✅ ${acc.name} est disponible !`);}
+      if(!available)notified.delete(acc.id);
+      const existing=document.getElementById(`card-${acc.id}`);
+      if(existing){
+        const cd=existing.querySelector('.card-countdown');
+        if(cd)cd.textContent=countdown(rem);
+        if(available){existing.classList.add('available');if(cd)cd.style.display='none';const av=existing.querySelector('.card-avail');if(av)av.style.display='';}
+        const pct=existing.querySelector('.ring-pct');if(pct)pct.textContent=Math.round(progress*100)+'%';
+        const arc=existing.querySelectorAll('circle')[1];
+        if(arc){const r2=(78-6)/2,c2=2*Math.PI*r2;arc.setAttribute('stroke-dashoffset',c2*(1-Math.max(0,Math.min(1,progress))));}
+        return;
+      }
+      const card=document.createElement('div');
+      card.className=`card${available?' available':''}`;
+      card.id=`card-${acc.id}`;
+      card.innerHTML=`
+        <div class="card-accent" style="background:${available?'var(--ok)':color}"></div>
+        <div class="card-body">
+          <div class="ring-wrap">${ring(progress,available?'var(--ok)':color)}
+            <div class="ring-center">${available?`<span class="ring-check" style="color:var(--ok)">✓</span>`:`<span class="ring-pct" style="color:${color}">${Math.round(progress*100)}%</span>`}</div>
+          </div>
+          <div class="card-info">
+            <div class="card-name-row">
+              <span class="card-name">${acc.name}</span>
+              ${acc.email?`<span class="card-email">${acc.email}</span>`:''}
+            </div>
+            <div class="card-sub">Depuis ${fmt(acc.blockedAt)} · libre à ${fmt(acc.availableAt)}</div>
+            ${available?`<div class="card-avail">● Disponible maintenant !</div>`:`<div class="card-countdown">${countdown(rem)}</div>`}
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="card-btn" onclick="editAccount('${acc.id}')">✏️ Modifier</button>
+          <button class="card-btn del" onclick="deleteAccount('${acc.id}')">🗑 Supprimer</button>
+        </div>`;
+      list.appendChild(card);
+    });
+    list.querySelectorAll('.card').forEach(el=>{
+      const id=Number(el.id.replace('card-',''));
+      if(!accounts.find(a=>a.id===id))el.remove();
+    });
+  }
+
+  function openForm(id=null){
+    editId=id;
+    const acc=id?accounts.find(a=>a.id===id):null;
+    document.getElementById('formTitle').textContent=id?'Modifier le compte':'Nouveau compte';
+    document.getElementById('fName').value=acc?acc.name:'';
+    document.getElementById('fEmail').value=acc?(acc.email||''):'';
+    if(acc){const d=new Date(acc.availableAt);document.getElementById('fTime').value=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+    else document.getElementById('fTime').value='';
+    document.querySelector('#formWrap .btn-save').textContent=id?'Enregistrer':'Ajouter';
+    document.getElementById('addBtn').style.display='none';
+    document.getElementById('formWrap').style.display='block';
+    document.getElementById('fName').focus();
+  }
+  function closeForm(){
+    editId=null;
+    document.getElementById('formWrap').style.display='none';
+    document.getElementById('addBtn').style.display=accounts.length?'flex':'none';
+  }
+  function saveAccount(){
+    const name=document.getElementById('fName').value.trim();
+    const email=document.getElementById('fEmail').value.trim();
+    const time=document.getElementById('fTime').value;
+    if(!name||!time){showToast("⚠️ Remplissez le nom et l'heure");return;}
+    const[ah,am]=time.split(':').map(Number);
+    const avail=new Date();avail.setHours(ah,am,0,0);
+    const now=Date.now();
+    if(avail.getTime()<now-60000)avail.setDate(avail.getDate()+1);
+    const availableAt=avail.getTime();
+    if(editId){accounts=accounts.map(a=>a.id===editId?{...a,name,email,availableAt}:a);}
+    else{accounts.push({id:Date.now(),name,email,blockedAt:now,availableAt,colorIdx:accounts.length%COLORS.length});}
+    save();closeForm();
+    document.getElementById('list').innerHTML='';
+    render();
+  }
+  function editAccount(id){openForm(Number(id));}
+  function deleteAccount(id){
+    id=Number(id);accounts=accounts.filter(a=>a.id!==id);save();
+    const card=document.getElementById(`card-${id}`);if(card)card.remove();
+    if(accounts.length===0){document.getElementById('list').innerHTML='';render();}
+  }
+
+  load();updateNotifUI();render();setInterval(render,1000);
+</script>
+</body>
+</html>
